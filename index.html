@@ -443,6 +443,18 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible, input:focus-vis
 	font: inherit;
 	font-size: 17px;
 }
+/* SugarCube 기본값(포커스·호버 시 어두운 배경)을 덮어써서, 입력하는 동안에도 흰 바탕에 진한 글씨로 보이게 */
+html .form-sheet .field input,
+html .form-sheet .field input:hover,
+html .form-sheet .field input:focus {
+	background-color: #fff;
+	color: var(--ink);
+	-webkit-text-fill-color: var(--ink);
+	caret-color: var(--red);
+	border-color: var(--ink);
+}
+html .form-sheet .field input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(168, 38, 28, .15); }
+html .form-sheet .field input::placeholder { color: #9a8f7e; -webkit-text-fill-color: #9a8f7e; }
 .fine { font-size: 13.5px; line-height: 1.6; color: var(--ink-soft); margin: .4em 0; }
 .form-err { color: var(--red); font-weight: 700; font-size: 15px; margin: .4em 0; }
 
