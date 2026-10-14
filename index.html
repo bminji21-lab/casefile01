@@ -898,7 +898,119 @@ button[disabled]:hover { cursor: default; }
 }
 .art-portrait figcaption { margin-top: 6px; font-family: var(--pen); font-size: 22px; line-height: 1; color: var(--ink); }
 .beat-in .art-portrait { animation: beatIn .28s ease-out both; }
-</style><script role="script" id="twine-user-script" type="text/twine-javascript">/* CASE FILE 01 · Law-Impact 사전미션
+
+/* ---------- 소품 SVG 그림 ---------- */
+.art-svg { margin: .6em -6px 1em; }
+.art-svg svg { display: block; width: 100%; height: auto; overflow: visible; }
+.art-prop { max-width: 340px; margin-left: auto; margin-right: auto; }
+</style><script role="script" id="twine-user-script" type="text/twine-javascript">/* twine-user-script #1: "art.js" */
+/* 소품 그림: 글자가 정확해야 하는 그림은 SVG로 직접 그린다 */
+(function () {
+	var PEN = "font-family:var(--pen)";
+	var SANS = "font-family:var(--sans)";
+	var STAMP = "font-family:var(--stamp)";
+
+	function note(x, y, w, h, rot, fill, inner) {
+		return '<g transform="translate(' + x + ' ' + y + ') rotate(' + rot + ' ' + (w / 2) + ' ' + (h / 2) + ')">' +
+			'<rect x="2" y="4" width="' + w + '" height="' + h + '" fill="#000" opacity=".16" filter="url(#tl-blur)"/>' +
+			'<rect width="' + w + '" height="' + h + '" fill="' + fill + '"/>' +
+			'<rect width="' + w + '" height="12" fill="#000" opacity=".05"/>' +
+			inner + '</g>';
+	}
+	function pin(x, y) {
+		return '<g><circle cx="' + (x + 1.5) + '" cy="' + (y + 2.5) + '" r="5.5" fill="#000" opacity=".25"/>' +
+			'<circle cx="' + x + '" cy="' + y + '" r="5.5" fill="#b8261b"/>' +
+			'<circle cx="' + (x - 1.8) + '" cy="' + (y - 1.8) + '" r="1.8" fill="#fff" opacity=".7"/></g>';
+	}
+	function string(a, b, sag, w) {
+		var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 + sag;
+		return '<path d="M' + a[0] + ' ' + a[1] + ' Q' + mx + ' ' + my + ' ' + b[0] + ' ' + b[1] + '" fill="none" stroke="#a8261c" stroke-width="' + (w || 1.7) + '" stroke-linecap="round"/>';
+	}
+	function t(x, y, size, txt, extra) {
+		return '<text x="' + x + '" y="' + y + '" style="' + PEN + ';font-size:' + size + 'px" fill="' + ((extra && extra.fill) || '#2b2620') + '">' + txt + '</text>';
+	}
+
+	/* ① 모눈종이 우정 연표 + 빨간 실 */
+	var P = { n1: [99, 86], ph: [236, 60], n2: [262, 150], n3: [106, 240], n4: [262, 284], n5: [104, 356], n6: [262, 392] };
+	var timeline =
+		'<svg viewBox="0 0 360 486" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="모눈종이에 붙은 우정 연표. 초1 같은 반 짝꿍, 중2 수학여행 버스 옆자리, 고1 같은 고등학교 입학, 고2 또 같은 반, 6월 물음표, 9월 11일 느낌표. 메모지들이 빨간 실로 이어져 있다.">' +
+		'<defs>' +
+		'<pattern id="tl-grid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#b9d0d6" stroke-width=".7"/></pattern>' +
+		'<pattern id="tl-grid5" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0H0V60" fill="none" stroke="#93b6bf" stroke-width="1"/></pattern>' +
+		'<filter id="tl-blur" x="-10%" y="-10%" width="130%" height="130%"><feGaussianBlur stdDeviation="2.2"/></filter>' +
+		'</defs>' +
+		'<g transform="rotate(-0.8 180 243)">' +
+		'<rect x="12" y="16" width="340" height="462" fill="#000" opacity=".28" filter="url(#tl-blur)"/>' +
+		'<rect x="8" y="10" width="340" height="462" fill="#f7f4ea"/>' +
+		'<rect x="8" y="10" width="340" height="462" fill="url(#tl-grid)"/>' +
+		'<rect x="8" y="10" width="340" height="462" fill="url(#tl-grid5)"/>' +
+		'<rect x="22" y="2" width="58" height="18" fill="#e9dcae" opacity=".85" transform="rotate(-6 51 11)"/>' +
+		'<rect x="280" y="2" width="58" height="18" fill="#e9dcae" opacity=".85" transform="rotate(5 309 11)"/>' +
+		t(28, 56, 32, '우정 연표') +
+		'<path d="M26 64 q 50 -5 106 1" fill="none" stroke="#a8261c" stroke-width="2.4" stroke-linecap="round"/>' +
+		/* 실은 메모 밑으로 지나가고, 압정만 위에 꽂힌다 */
+		string(P.n1, P.ph, 10) + string(P.n1, P.n2, 22) + string(P.n2, P.n3, 20) + string(P.n3, P.n4, 18) +
+		string(P.n4, P.n5, 18) + string(P.n5, P.n6, 16, 2.6) +
+		/* 초1 브이 사진 */
+		'<g transform="translate(204 58) rotate(7 33 38)">' +
+		'<rect x="2" y="4" width="66" height="78" fill="#000" opacity=".18" filter="url(#tl-blur)"/>' +
+		'<rect width="66" height="78" fill="#fffdf6"/>' +
+		'<rect x="6" y="6" width="54" height="50" fill="#d8cdb2"/>' +
+		'<circle cx="22" cy="26" r="7" fill="#fbe8d0" stroke="#2b2620" stroke-width="1"/><circle cx="44" cy="26" r="7" fill="#fbe8d0" stroke="#2b2620" stroke-width="1"/>' +
+		'<path d="M19 29 q3 3 6 0 M41 29 q3 3 6 0" stroke="#2b2620" stroke-width="1" fill="none"/>' +
+		'<path d="M22 33 v14 M44 33 v14 M22 38 l-8 -6 M44 38 l8 -6" stroke="#2b2620" stroke-width="1.4" fill="none"/>' +
+		'<path d="M13 32 l-2 -6 M13 32 l2 -6 M53 32 l-2 -6 M53 32 l2 -6" stroke="#2b2620" stroke-width="1.2" fill="none"/>' +
+		t(8, 71, 12, '앞니 빠진 브이') +
+		'</g>' +
+		note(22, 82, 156, 76, -3, '#f2d66b', t(14, 30, 26, '초1') + t(14, 52, 16, '같은 반 짝꿍') + t(14, 69, 14, '소문난 단짝')) +
+		note(184, 146, 156, 78, 2.5, '#f6e7a1', t(14, 30, 26, '중2') + t(14, 52, 16, '수학여행 버스') + t(14, 70, 14, '4시간 수다 → 혼남')) +
+		note(28, 236, 152, 64, 1.5, '#f2d66b', t(14, 30, 26, '고1') + t(14, 52, 16, '같은 고등학교로')) +
+		note(186, 280, 154, 64, -2, '#f6e7a1', t(14, 30, 26, '고2') + t(14, 52, 16, '또 같은 반! 2-3반')) +
+		note(32, 352, 142, 74, -2.5, '#f4cdc6', t(14, 32, 26, '6월') + '<text x="100" y="60" style="' + STAMP + ';font-size:38px" fill="#a8261c">?</text>') +
+		note(190, 388, 148, 74, 3, '#f4cdc6', t(14, 32, 26, '9월 11일') + '<text x="104" y="68" style="' + STAMP + ';font-size:38px" fill="#a8261c">!!</text>') +
+		pin(P.n1[0], P.n1[1]) + pin(P.ph[0], P.ph[1]) + pin(P.n2[0], P.n2[1]) + pin(P.n3[0], P.n3[1]) +
+		pin(P.n4[0], P.n4[1]) + pin(P.n5[0], P.n5[1]) + pin(P.n6[0], P.n6[1]) +
+		'</g></svg>';
+
+	/* ② 정다님 선생님의 갈등조정 연수 자료집 */
+	var heart = 'M0 6 C0 -2 10 -4 12 3 C14 -4 24 -2 24 6 C24 14 14 19 12 23 C10 19 0 14 0 6 Z';
+	var binder =
+		'<svg viewBox="0 0 360 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="하트 스티커가 붙은 두꺼운 자료집. 표지에 갈등조정 연수 자료라고 적혀 있다.">' +
+		'<defs><filter id="bd-blur" x="-10%" y="-10%" width="130%" height="130%"><feGaussianBlur stdDeviation="4"/></filter></defs>' +
+		'<g transform="rotate(-4 180 135)">' +
+		'<rect x="50" y="48" width="276" height="200" rx="4" fill="#000" opacity=".35" filter="url(#bd-blur)"/>' +
+		/* 위로 삐져나온 포스트잇 */
+		'<rect x="92" y="22" width="30" height="30" fill="#f2d66b" transform="rotate(-5 107 37)"/>' +
+		'<rect x="132" y="18" width="30" height="30" fill="#f4a6a0" transform="rotate(4 147 33)"/>' +
+		'<rect x="214" y="24" width="30" height="30" fill="#9cc5a1" transform="rotate(-3 229 39)"/>' +
+		/* 두께 */
+		'<rect x="48" y="44" width="272" height="198" rx="3" fill="#e2d9c3"/>' +
+		'<path d="M52 236 H316 M52 231 H316 M52 226 H316" stroke="#cbbfa3" stroke-width="1"/>' +
+		/* 옆 인덱스 탭 */
+		'<rect x="308" y="62" width="22" height="24" rx="3" fill="#f2d66b"/>' +
+		'<rect x="308" y="94" width="22" height="24" rx="3" fill="#9cc5a1"/>' +
+		'<rect x="308" y="126" width="22" height="24" rx="3" fill="#f4a6a0"/>' +
+		'<rect x="308" y="158" width="22" height="24" rx="3" fill="#a7c4e6"/>' +
+		/* 표지 */
+		'<rect x="40" y="36" width="272" height="190" rx="3" fill="#f8f4ea" stroke="#d6cdb8"/>' +
+		'<rect x="40" y="36" width="272" height="34" rx="3" fill="#2f5d57"/>' +
+		'<rect x="40" y="62" width="272" height="8" fill="#2f5d57"/>' +
+		'<text x="58" y="58" style="' + SANS + ';font-size:12px;letter-spacing:.06em" fill="#f1eadb">2026 교원 연수 교재</text>' +
+		'<text x="58" y="120" style="' + STAMP + ';font-size:40px" fill="#2b2620">갈등조정</text>' +
+		'<text x="58" y="164" style="' + STAMP + ';font-size:40px" fill="#2b2620">연수 자료</text>' +
+		'<path d="M58 178 H200" stroke="#a8261c" stroke-width="2.5"/>' +
+		'<text x="58" y="198" style="' + SANS + ';font-size:12.5px" fill="#6a5f50">대화로 푸는 학교 갈등</text>' +
+		/* 하트 스티커 */
+		'<g transform="translate(244 86) rotate(14 24 22) scale(2)"><path d="' + heart + '" fill="#e8607a" stroke="#fff" stroke-width="1.6"/><ellipse cx="7" cy="5" rx="2.6" ry="1.6" fill="#fff" opacity=".75" transform="rotate(-30 7 5)"/></g>' +
+		/* 이름 스티커 */
+		'<g transform="rotate(-3 252 204)"><rect x="206" y="192" width="92" height="24" rx="3" fill="#fffdf6" stroke="#d6cdb8"/>' +
+		t(216, 210, 18, '담임 정다님') + '</g>' +
+		'</g></svg>';
+
+	setup.ART = { timeline: timeline, binder: binder };
+})();
+/* twine-user-script #2: "story.js" */
+/* CASE FILE 01 · Law-Impact 사전미션
    SugarCube 2.37 story script */
 
 /* ---------- 기본 설정 ---------- */
@@ -1086,6 +1198,9 @@ $(document).on(':passagedisplay', function () {
 	/* 증명서 그림 채우기 */
 	var fp = document.getElementById('fp-slot');
 	if (fp) { fp.innerHTML = setup.fingerprint(setup.norm(State.variables.name) + '|' + setup.norm(State.variables.school)); }
+	Array.prototype.forEach.call(root.querySelectorAll('[data-art]'), function (el) {
+		if (setup.ART && setup.ART[el.getAttribute('data-art')]) { el.innerHTML = setup.ART[el.getAttribute('data-art')]; }
+	});
 	var bd = document.getElementById('board-slot');
 	if (bd) { bd.innerHTML = setup.board(); }
 	var ct = document.getElementById('copytext');
@@ -1366,10 +1481,10 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;&lt;if _done is 0&gt;&gt;
 &lt;&lt;D&gt;&gt;어디부터 볼래? 순서는 자유야. 수사는 원래 그래.&lt;&lt;/D&gt;&gt;
 &lt;&lt;elseif _done lt 3&gt;&gt;
-&lt;&lt;D&gt;&gt;CCTV는 마지막이야. 지킴이 할아버지는 자료를 다 모아 가야 설득돼.&lt;&lt;/D&gt;&gt;
+&lt;&lt;D&gt;&gt;CCTV는 마지막이야. 지킴이 할아버지는 공짜로는 절대 안 보여 줘. 뭘 확인할지부터 정확히 알고 가야 거래가 돼.&lt;&lt;/D&gt;&gt;
 &lt;&lt;else&gt;&gt;
 &lt;&lt;D&gt;&gt;자료는 다 모였어. 이제… 지킴이실로 간다.&lt;&lt;/D&gt;&gt;
-&lt;&lt;N&gt;&gt;도일이 돋보기를 주머니에 넣는다.&lt;&lt;/N&gt;&gt;
+&lt;&lt;N&gt;&gt;도일이 돋보기를 주머니에 넣고, 가방에 요구르트 한 줄을 챙긴다.&lt;&lt;/N&gt;&gt;
 &lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="9" name="File01" tags="" position="1100,100" size="100,100">&lt;&lt;if !$opened.includes(&quot;F01&quot;)&gt;&gt;&lt;&lt;run $opened.push(&quot;F01&quot;)&gt;&gt;&lt;&lt;/if&gt;&gt;
 &lt;&lt;scene &quot;FILE 01 · 인물 카드&quot;&gt;&gt;
 &lt;div class=&quot;beat&quot;&gt;
@@ -1386,18 +1501,11 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;N&gt;&gt;그 아래 모눈종이에 &#39;우정 연표&#39;. 메모지들이 빨간 실로 이어져 있다.&lt;&lt;/N&gt;&gt;
-&lt;ol class=&quot;timeline&quot;&gt;
-&lt;li&gt;&lt;b&gt;초1&lt;/b&gt;같은 반 짝꿍. 앞니 빠진 두 꼬마의 브이 사진.&lt;/li&gt;
-&lt;li&gt;&lt;b&gt;중2&lt;/b&gt;수학여행 버스 옆자리. 4시간 내내 떠들다 기사님께 혼남.&lt;/li&gt;
-&lt;li&gt;&lt;b&gt;고1&lt;/b&gt;같은 고등학교 입학.&lt;/li&gt;
-&lt;li&gt;&lt;b&gt;고2&lt;/b&gt;또 같은 반. 2학년 3반.&lt;/li&gt;
-&lt;li class=&quot;q&quot;&gt;&lt;b&gt;6월&lt;/b&gt;?&lt;/li&gt;
-&lt;li class=&quot;q&quot;&gt;&lt;b&gt;9월 11일&lt;/b&gt;!!&lt;/li&gt;
-&lt;/ol&gt;
+&lt;figure class=&quot;art-svg&quot; data-art=&quot;timeline&quot;&gt;&lt;/figure&gt;
 &lt;p class=&quot;source&quot;&gt;출처: 도일 (&quot;둘이 하도 자랑해서 반 전체가 다 알아&quot;)&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;&lt;D&gt;&gt;10년이야. 우리 추리반 역사의 다섯 배.&lt;&lt;/D&gt;&gt;
+&lt;&lt;D&gt;&gt;이 둘의 우정은 10년이야. 우리 추리반 역사의 다섯 배.&lt;&lt;/D&gt;&gt;
 &lt;&lt;Me&gt;&gt;추리반은 몇 년 됐는데.&lt;&lt;/Me&gt;&gt;
 &lt;&lt;D&gt;&gt;2년.&lt;&lt;/D&gt;&gt;
 &lt;/div&gt;
@@ -1463,25 +1571,25 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;div class=&quot;chat-head&quot;&gt;우리 반 &lt;span&gt;33&lt;/span&gt;&lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;급식왕&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;전학생 들어왔다 ㅎㅇㅎㅇ&lt;/span&gt;&lt;/div&gt;
-&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;롤다이아가꿈&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;환영~ 롤 하냐?&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;롤다이아&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;환영~ 롤 하냐?&lt;/span&gt;&lt;/div&gt;
 &lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;급식왕&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;근데 민서랑 지훈이 요즘 왜 그럼?&lt;/span&gt;&lt;/div&gt;
-&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;반장아님&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;내가 들은 바로는 치킨 마지막 조각 때문&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;반장맞음&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;내가 들은 바로는 치킨 마지막 조각 때문&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;익명의 제보자&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;아니래. 돈 문제래. 82만 원?&lt;/span&gt;&lt;/div&gt;
 &lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;급식왕&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;그 돈이면 치킨이 41마리임&lt;/span&gt;&lt;/div&gt;
-&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;반장아님&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;근데 이거 확실함?&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;반장맞음&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;근데 이거 확실함?&lt;/span&gt;&lt;/div&gt;
 &lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;익명의 제보자&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;몰라 걍 들음&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;롤다이아가꿈&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;이런 거 퍼지면 둘 다 학교 다니기 힘들겠다&lt;/span&gt;&lt;/div&gt;
-&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;반장아님&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;그럼 말 옮기지 말자 ㅇㅇ 아무도 당사자한테 직접 물어본 적도 없잖아&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;롤다이아&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;이런 거 퍼지면 둘 다 학교 다니기 힘들겠다&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;반장맞음&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;그럼 말 옮기지 말자 ㅇㅇ 아무도 당사자한테 직접 물어본 적도 없잖아&lt;/span&gt;&lt;/div&gt;
 &lt;p class=&quot;sys&quot;&gt;익명의 제보자님이 나갔습니다.&lt;/p&gt;
 &lt;div class=&quot;msg&quot;&gt;&lt;span class=&quot;nick&quot;&gt;급식왕&lt;/span&gt;&lt;span class=&quot;bub&quot;&gt;ㅇㅇ 근데 내일 급식 치킨마요임&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;&lt;D&gt;&gt;단톡방에서 확실한 건 하나야. 아무도 확실하게 모른다는 거. 참고로 반장아님은 진짜 반장이 아니야.&lt;&lt;/D&gt;&gt;
+&lt;&lt;D&gt;&gt;단톡방에서 확실한 건 하나야. 아무도 확실하게 모른다는 거. 참고로 반장맞음은 진짜 반장이 아니야.&lt;&lt;/D&gt;&gt;
 &lt;&lt;Me&gt;&gt;그럼 반장은 누구인데.&lt;&lt;/Me&gt;&gt;
 &lt;&lt;D&gt;&gt;그건 미제 사건이야.&lt;&lt;/D&gt;&gt;
 &lt;/div&gt;
@@ -1499,14 +1607,23 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;div class=&quot;beat&quot;&gt;&lt;button class=&quot;go&quot; data-passage=&quot;Hub&quot;&gt;파일 닫기&lt;/button&gt;&lt;/div&gt;</tw-passagedata><tw-passagedata pid="12" name="File04" tags="" position="225,225" size="100,100">&lt;&lt;if !$opened.includes(&quot;F04&quot;)&gt;&gt;&lt;&lt;run $opened.push(&quot;F04&quot;)&gt;&gt;&lt;&lt;/if&gt;&gt;
 &lt;&lt;scene &quot;FILE 04 · CCTV&quot;&gt;&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;&lt;N&gt;&gt;정문 옆 작은 지킴이실. 4분할 모니터 앞에서 지킴이 할아버지가 안경을 고쳐 쓴다.&lt;&lt;/N&gt;&gt;
+&lt;&lt;N&gt;&gt;정문 옆 작은 지킴이실. 4분할 모니터 앞에서 지킴이 할아버지가 요구르트를 빨대로 마시고 있다. 창틀에는 빈 요구르트 병이 줄지어 서 있다.&lt;&lt;/N&gt;&gt;
 &lt;&lt;G&gt;&gt;못 보던 얼굴이네?&lt;&lt;/G&gt;&gt;
-&lt;&lt;D&gt;&gt;오늘 전학 온 신입 부원이에요!&lt;&lt;/D&gt;&gt;
-&lt;&lt;G&gt;&gt;허허. 원래는 안 되는 거다. 1분만. 확대 금지, 녹화 금지. 소리는 원래 없고.&lt;&lt;/G&gt;&gt;
+&lt;&lt;D&gt;&gt;오늘 전학 온 신입 부원이에요! 할아버지, 9월 11일 후문 쓰레기장 CCTV 좀 보여 주세요.&lt;&lt;/D&gt;&gt;
+&lt;&lt;G&gt;&gt;안 된다. 학생한테 CCTV 보여 줬다가는 할아버지가 큰일 나.&lt;&lt;/G&gt;&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;&lt;D&gt;&gt;감사합니다! 내일 요구르트 두 개 갖다 드릴게요.&lt;&lt;/D&gt;&gt;
-&lt;&lt;Me&gt;&gt;(작게) 뇌물이잖아.&lt;&lt;/Me&gt;&gt;
+&lt;&lt;N&gt;&gt;도일이 가방에서 요구르트 한 줄을 꺼내 책상에 올려놓는다.&lt;&lt;/N&gt;&gt;
+&lt;&lt;D&gt;&gt;이번 주 후문 분리수거 검사, 추리반이 대신 할게요. 요구르트는 덤이고요.&lt;&lt;/D&gt;&gt;
+&lt;&lt;G&gt;&gt;(빨대를 문 채 요구르트를 한참 본다) …일주일.&lt;&lt;/G&gt;&gt;
+&lt;&lt;D&gt;&gt;일주일!&lt;&lt;/D&gt;&gt;
+&lt;&lt;G&gt;&gt;허허, 거래 성립. 1분만이다. 확대 금지, 녹화 금지. 소리는 원래 없고.&lt;&lt;/G&gt;&gt;
+&lt;/div&gt;
+&lt;div class=&quot;beat&quot;&gt;
+&lt;&lt;Me&gt;&gt;(작게) 이거 뇌물이잖아.&lt;&lt;/Me&gt;&gt;
+&lt;&lt;D&gt;&gt;(작게) 협상이야.&lt;&lt;/D&gt;&gt;
+&lt;&lt;G&gt;&gt;할아버지는 거래는 꼭 지킨다. …원칙도 꼭 지키고.&lt;&lt;/G&gt;&gt;
+&lt;&lt;N&gt;&gt;할아버지가 요구르트를 서랍에 쓸어 넣고, 낡은 수첩에 뭔가를 적는다.&lt;&lt;/N&gt;&gt;
 &lt;/div&gt;
 &lt;div class=&quot;monitor beat&quot;&gt;
 &lt;div class=&quot;mon-head&quot;&gt;&lt;span class=&quot;rec&quot;&gt;REC&lt;/span&gt;&lt;span&gt;CAM-07 · 후문 쓰레기장&lt;/span&gt;&lt;span&gt;2026.09.11 (금)&lt;/span&gt;&lt;/div&gt;
@@ -1540,6 +1657,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;replay-r&quot;&gt;한 번만 더요&lt;/button&gt;
 &lt;/div&gt;
 &lt;div class=&quot;resp&quot; id=&quot;replay-r&quot; hidden&gt;&lt;&lt;G&gt;&gt;안 된다.&lt;&lt;/G&gt;&gt;&lt;/div&gt;
+&lt;&lt;N&gt;&gt;지킴이실 문이 닫히자마자, 안에서 수화기 드는 소리가 들린다.&lt;&lt;/N&gt;&gt;
 &lt;button class=&quot;go&quot; data-passage=&quot;Cut&quot;&gt;동아리실로 돌아가기&lt;/button&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="13" name="Cut" tags="" position="350,225" size="100,100">&lt;&lt;scene &quot;끊긴 화면&quot;&gt;&gt;
 &lt;div class=&quot;beat&quot;&gt;
@@ -1571,10 +1689,12 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;button class=&quot;go&quot; data-passage=&quot;Lesson1&quot;&gt;문 열기&lt;/button&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="14" name="Lesson1" tags="" position="475,225" size="100,100">&lt;&lt;scene &quot;선생님 등장&quot;&gt;&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;&lt;N&gt;&gt;문이 열리고 정다님 선생님이 들어온다. 담임이자 추리반 지도 선생님이다. 손에는 하트 스티커가 붙은 두꺼운 자료집, 표지에 &#39;갈등조정 연수 자료&#39;.&lt;&lt;/N&gt;&gt;
+&lt;&lt;N&gt;&gt;문이 열리고 정다님 선생님이 들어온다. 담임이자 추리반 지도 선생님이다.&lt;&lt;/N&gt;&gt;
+&lt;figure class=&quot;art-svg art-prop&quot; data-art=&quot;binder&quot;&gt;&lt;/figure&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;T&gt;&gt;방금 지킴이 할아버님께 전화 받았다. 전학 첫날부터 CCTV를 보여 달라고 졸랐다면서? 서도일, 신입을 데리고 이게 뭐 하는 거니.&lt;&lt;/T&gt;&gt;
+&lt;&lt;D&gt;&gt;(작게) …요구르트는 다 받아 놓고.&lt;&lt;/D&gt;&gt;
 &lt;&lt;N&gt;&gt;도일이 돋보기를 슬쩍 등 뒤로 숨긴다.&lt;&lt;/N&gt;&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;&lt;&lt;T&gt;&gt;친구 걱정하는 마음은 선생님도 안다. 그런데 이건 범인을 찾을 일이 아니야. CCTV도 함부로 보는 게 아니고. 다음부터는 안 된다, 알겠지?&lt;&lt;/T&gt;&gt;&lt;/div&gt;
@@ -1704,19 +1824,23 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;&lt;D&gt;&gt;조정위원 칸이 비어 있는데요?&lt;&lt;/D&gt;&gt;
 &lt;&lt;T&gt;&gt;그래서 너희한테 부탁하는 거다. 그날 그 자리, 맡아 줄 수 있겠니?&lt;&lt;/T&gt;&gt;
 &lt;&lt;N&gt;&gt;선생님이 웃으며 &lt;&lt;nm&gt;&gt; 쪽을 본다.&lt;&lt;/N&gt;&gt;
+&lt;/div&gt;
+&lt;div class=&quot;beat&quot;&gt;
+&lt;&lt;N&gt;&gt;선생님이 추리반 사건 파일을 끌어와, 표지에 도장을 쾅 찍는다.&lt;&lt;/N&gt;&gt;
+&lt;div class=&quot;stamp-row&quot;&gt;&lt;span class=&quot;stamp&quot;&gt;조정 회부&lt;/span&gt;&lt;/div&gt;
+&lt;&lt;T&gt;&gt;이 사건은 이제 조정실로 넘어간다. 그날 보자.&lt;&lt;/T&gt;&gt;
 &lt;button class=&quot;go&quot; data-passage=&quot;End&quot;&gt;사건 파일 닫기&lt;/button&gt;
 &lt;/div&gt;</tw-passagedata><tw-passagedata pid="19" name="End" tags="" position="1100,225" size="100,100">&lt;&lt;scene &quot;사건 종결&quot;&gt;&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;&lt;N&gt;&gt;저녁, 동아리실. 도일이 서류철을 덮고 표지에 도장을 찍는다.&lt;&lt;/N&gt;&gt;
-&lt;div class=&quot;stamp-row&quot;&gt;&lt;span class=&quot;stamp&quot;&gt;조정 회부&lt;/span&gt;&lt;/div&gt;
+&lt;&lt;N&gt;&gt;저녁, 동아리실. 도일이 &#39;조정 회부&#39; 도장이 찍힌 서류철을 가만히 덮는다.&lt;&lt;/N&gt;&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;&lt;&lt;D&gt;&gt;전학 첫날치고 꽤 했어, &lt;&lt;nm&gt;&gt;. 정리해 볼게. 우리는 둘이 웃던 것도, 멀어지던 것도, 그날 고개를 젓던 것도 다 봤어.&lt;&lt;/D&gt;&gt;&lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;&lt;&lt;Me&gt;&gt;근데 왜 그랬는지는 하나도 몰라. 그건 어떤 파일에도 안 남아 있으니까.&lt;&lt;/Me&gt;&gt;&lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;D&gt;&gt;추리반 역사상 처음이야. 범인 없는 사건. 그리고 첫 조정위원 의뢰.&lt;&lt;/D&gt;&gt;
-&lt;&lt;Me&gt;&gt;원래 없었다니까.&lt;&lt;/Me&gt;&gt;
+&lt;&lt;Me&gt;&gt;그러게! 재밌겠다. 뭘 준비하면 좋을까?&lt;&lt;/Me&gt;&gt;
 &lt;/div&gt;
-&lt;div class=&quot;beat&quot;&gt;&lt;&lt;D&gt;&gt;조정실엔 돋보기가 필요 없대. 대신 묻고, 듣고, 정리하는 사람이 필요하대. …그게 너일지도 몰라, &lt;&lt;nm&gt;&gt;.&lt;&lt;/D&gt;&gt;&lt;/div&gt;
+&lt;div class=&quot;beat&quot;&gt;&lt;&lt;D&gt;&gt;음… 조정실엔 돋보기가 필요 없대. 대신 묻고, 듣고, 정리하는 사람이 필요하대. …그게 너일지도 몰라, &lt;&lt;nm&gt;&gt;.&lt;&lt;/D&gt;&gt;&lt;/div&gt;
 &lt;div class=&quot;beat dark&quot;&gt;&lt;&lt;N&gt;&gt;불이 꺼진 동아리실. 화이트보드에는 멈춘 화면을 그린 메모 한 장만 남아 있다.&lt;&lt;/N&gt;&gt;&lt;p class=&quot;dark-tc&quot;&gt;16:42:49&lt;/p&gt;&lt;/div&gt;
 &lt;div class=&quot;beat dark&quot;&gt;&lt;&lt;Me&gt;&gt;부장. 가끔 그런 생각 안 들어? 그때 할아버지가 정지 버튼을 안 눌렀으면…&lt;&lt;/Me&gt;&gt;&lt;/div&gt;
 &lt;div class=&quot;beat dark&quot;&gt;&lt;&lt;D&gt;&gt;……다른 세계선에서는, 그다음 장면이 전혀 다르게 기록돼 있을지도 몰라.&lt;&lt;/D&gt;&gt;&lt;/div&gt;
