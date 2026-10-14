@@ -1023,6 +1023,9 @@ button[disabled]:hover { cursor: default; }
 .stamp.stamp-wait { opacity: 0; animation: none !important; }
 .typing .choices, .typing > .go, .typing .quiz, .typing .tap-hint { visibility: hidden; }
 .line.tw-hide::after { display: none; }
+
+/* 플레이어가 고른 말은 대사창으로 바뀌고 선택지는 접힌다 */
+.choices.said { display: none; }
 </style><script role="script" id="twine-user-script" type="text/twine-javascript">/* twine-user-script #1: "art.js" */
 /* 소품 그림: 글자가 정확해야 하는 그림은 SVG로 직접 그린다 */
 (function () {
@@ -1768,10 +1771,19 @@ $(document).on('click', '.choices .opt', function () {
 		v.scored.push(id);
 	}
 	var respId = jQuery(btn).data('resp');
-	if (respId) {
-		var r = jQuery(btn).closest('.passage').find('#' + respId)[0];
-		if (r) { r.hidden = false; r.classList.add('beat-in'); scrollToEl(r, 'nearest'); setup.sfxBeat(r); }
+	var r = respId ? jQuery(btn).closest('.passage').find('#' + respId)[0] : null;
+	/* 플레이어가 하는 말이면: 선택지를 접고, 플레이어 이름이 달린 대사창으로 보여 준다 */
+	if ($g.data('say')) {
+		var said = jQuery(btn).text().trim().replace(/^["“]|["”]$/g, '');
+		var $line = jQuery('<div class="line c-me"><span class="who"></span><span class="say"></span></div>');
+		$line.find('.who').text(v.name || '나');
+		$line.find('.say').text(said);
+		if (!r) { r = jQuery('<div class="resp"></div>').insertAfter($g)[0]; }
+		else if (r.querySelector('.line.c-me[data-said]')) { r.querySelector('.line.c-me[data-said]').remove(); }
+		$line.attr('data-said', '1').prependTo(r);
+		$g.addClass('said');
 	}
+	if (r) { r.hidden = false; r.classList.add('beat-in'); scrollToEl(r, 'nearest'); setup.sfxBeat(r); }
 	if (setup._update) { setup._update(); }
 });
 
@@ -2090,7 +2102,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;&lt;D&gt;&gt;너가 오늘 온 전학생이지? 오오, 그 눈빛! 딱 좋아. 이 학교에 아직 아무 편견이 없는 눈이거든.&lt;&lt;/D&gt;&gt;&lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;D&gt;&gt;나는 추리반 부장 서도일. 우리 추리반은 탐정 동아리로 라파고등학교의 각종 의뢰와 수상한 사건들을 처리하지... 부장의 권한으로 특별히 너를 섭외하도록 하지.&lt;&lt;/D&gt;&gt;
-&lt;div class=&quot;choices&quot; data-id=&quot;join&quot;&gt;
+&lt;div class=&quot;choices&quot; data-id=&quot;join&quot; data-say=&quot;1&quot;&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;join-a&quot;&gt;좋아, 들어갈게&lt;/button&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;join-b&quot;&gt;…근데 왜 돋보기를 들고 있어?&lt;/button&gt;
 &lt;/div&gt;
@@ -2108,13 +2120,13 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;D&gt;&gt;신입 환영 회의를 시작한다. 참고로 나도 너랑 같은 반이야. 맨 뒷줄. 그리고 우리 동아리 지도 선생님이 바로 우리 담임 선생님이야.&lt;&lt;/D&gt;&gt;
 &lt;&lt;N&gt;&gt;돋보기를 눈앞으로 들어 올린다.&lt;&lt;/N&gt;&gt;
-&lt;div class=&quot;choices&quot; data-id=&quot;join2&quot;&gt;
+&lt;div class=&quot;choices&quot; data-id=&quot;join2&quot; data-say=&quot;1&quot;&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;join2-a&quot;&gt;근데... 부원이 이게 다야? 너랑 나, 둘뿐?&lt;/button&gt;
 &lt;/div&gt;
 &lt;div class=&quot;resp&quot; id=&quot;join2-a&quot; hidden&gt;&lt;&lt;D&gt;&gt;그...렇지...? 그래도 우리 추리반은 소수의 인원으로 학교의 각종 사건들을 척척 해결해 나가고 있다고! 크흠...&lt;&lt;/D&gt;&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;div class=&quot;choices&quot; data-id=&quot;join3&quot;&gt;
+&lt;div class=&quot;choices&quot; data-id=&quot;join3&quot; data-say=&quot;1&quot;&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;join3-a&quot;&gt;알겠으니까 부장, 돋보기 좀 내려&lt;/button&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;join3-b&quot;&gt;그래? 여긴 무슨 사건을 해?&lt;/button&gt;
 &lt;/div&gt;
@@ -2138,7 +2150,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;D&gt;&gt;그래서 네가 필요해. 난 둘을 너무 오래 봐서 벌써 편견이 있을지도 몰라. 넌 아직 누구 편도 아니잖아. …어때, 범인을 잡아 볼까?&lt;&lt;/D&gt;&gt;
-&lt;div class=&quot;choices&quot; data-id=&quot;case&quot;&gt;
+&lt;div class=&quot;choices&quot; data-id=&quot;case&quot; data-say=&quot;1&quot;&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;case-a&quot;&gt;이건 범인 찾는 사건 아니야. 친구 둘 일이라고.&lt;/button&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;case-b&quot;&gt;좋아, 범인을 잡자!&lt;/button&gt;
 &lt;/div&gt;
@@ -2345,7 +2357,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;&lt;G&gt;&gt;여기까지. 나머지는 선생님들 몫이다.&lt;&lt;/G&gt;&gt;
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
-&lt;div class=&quot;choices nonblock&quot; data-id=&quot;replay&quot;&gt;
+&lt;div class=&quot;choices nonblock&quot; data-id=&quot;replay&quot; data-say=&quot;1&quot;&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;replay-r&quot;&gt;한 번만 더요&lt;/button&gt;
 &lt;/div&gt;
 &lt;div class=&quot;resp&quot; id=&quot;replay-r&quot; hidden&gt;&lt;&lt;G&gt;&gt;안 된다.&lt;&lt;/G&gt;&gt;&lt;/div&gt;
@@ -2358,7 +2370,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;N&gt;&gt;도일이 말없이 화이트보드를 본다. 무슨 말을 할까?&lt;&lt;/N&gt;&gt;
-&lt;div class=&quot;choices&quot; data-id=&quot;cut&quot;&gt;
+&lt;div class=&quot;choices&quot; data-id=&quot;cut&quot; data-say=&quot;1&quot;&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;cut-a&quot;&gt;솔직히 다행인 것 같기도 해. 그다음은 우리가 봐도 되는 장면이 아닐지도 몰라.&lt;/button&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;cut-b&quot;&gt;하필 거기서… 너무 궁금해.&lt;/button&gt;
 &lt;/div&gt;
@@ -2423,7 +2435,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;/div&gt;
 &lt;div class=&quot;beat&quot;&gt;
 &lt;&lt;T&gt;&gt;너희가 조정위원이라면, 두 사람에게 뭘 물어보겠니?&lt;&lt;/T&gt;&gt;
-&lt;div class=&quot;choices&quot; data-id=&quot;remote&quot;&gt;
+&lt;div class=&quot;choices&quot; data-id=&quot;remote&quot; data-say=&quot;1&quot;&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;rm-a&quot;&gt;&quot;누가 먼저 리모컨 잡았어?&quot;&lt;/button&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;rm-b&quot;&gt;&quot;다수결로 정하자!&quot;&lt;/button&gt;
 &lt;button type=&quot;button&quot; class=&quot;opt&quot; data-resp=&quot;rm-c&quot;&gt;&quot;왜 18도가 필요해? 왜 끄고 싶어?&quot;&lt;/button&gt;
