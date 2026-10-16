@@ -70,6 +70,8 @@ label.field { display: block; font-weight: 900; font-size: 16px; margin: 0 0 8px
 .btn.ghost { background: #fff; font-size: 15px; min-height: 46px; box-shadow: none; }
 .kakao-box { margin-top: 18px; padding-top: 14px; border-top: 1.5px dashed #9aa6af; }
 .kakao-box p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.55; }
+.sent { margin: 10px 0 0; font-size: 13.5px; font-weight: 700; color: var(--blue); line-height: 1.5; }
+#back-game { background: #fff; }
 .empty { text-align: center; }
 .empty p { margin: 0 0 6px; line-height: 1.6; }
 .foot { text-align: center; font-size: 12px; color: #3f4a52; margin-top: 18px; }
@@ -107,10 +109,12 @@ label.field { display: block; font-weight: 900; font-size: 16px; margin: 0 0 8px
 				<button class="btn" id="go" type="submit">도장 받기</button>
 				<div class="kakao-box" id="kakao-box">
 					<p>버튼이 잘 안 되면 인증 문구를 카톡 채널로 보내 주세요. 운영진이 확인해서 도장을 찍어 드려요.</p>
-					<button class="btn ghost" id="kakao" type="button">카톡 채널로 보내기</button>
+					<a class="btn ghost" id="kakao" href="https://pf.kakao.com/_KVzFX/chat" target="_blank" rel="noopener">카톡 채널로 보내기</a>
+					<p class="sent" id="sent" hidden>채팅창에 붙여넣고 전송했다면 끝! 이 화면으로 돌아와 주세요.</p>
 				</div>
 			</form>
 		</section>
+		<a class="btn ghost" id="back-game" href="../?result" hidden>결과 화면으로 돌아가기 · 인스타 공유</a>
 	</main>
 
 	<main id="empty-view" class="box" hidden>
@@ -200,12 +204,17 @@ label.field { display: block; font-weight: 900; font-size: 16px; margin: 0 0 8px
 		var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
 		document.body.removeChild(ta); return ok;
 	}
-	$('kakao').addEventListener('click', function () {
-		var b = this;
-		copy(certText()).then(function () {
-			b.textContent = '문구 복사 완료! 채팅창에 붙여넣기 하세요';
-			setTimeout(function () { location.href = KAKAO_CHAT; }, 1300);
-		});
+	/* 결과 화면으로 돌아가는 길 (게임 결과는 같은 사이트에 저장돼 있다) */
+	var BACK = { 2: '../?result' };
+	if (BACK[m]) { $('back-game').href = BACK[m]; $('back-game').hidden = false; }
+
+	/* 카톡 채널은 새 창으로: 복사는 클릭하는 순간 바로 한다 */
+	$('kakao').addEventListener('click', function (e) {
+		var text = certText(), ok = false;
+		if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).catch(function () {}); ok = true; }
+		if (fallback(text)) { ok = true; }
+		if (!ok) { e.preventDefault(); showErr('자동 복사가 막혔어요. 이 화면을 캡처해서 채널로 보내 주세요.'); return; }
+		$('sent').hidden = false;
 	});
 })();
 </script>

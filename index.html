@@ -2147,18 +2147,23 @@ setup.copyFallback = function (text) {
 	document.body.removeChild(ta);
 	return ok;
 };
-$(document).on('click', '#kakao-btn', function () {
-	var text = setup.certText();
-	setup.copy(text).then(function (ok) {
+/* 카톡 채널은 새 창으로 연다: 게임 화면이 남아 있어 보내고 돌아와 인스타 공유까지 할 수 있게.
+   복사는 클릭하는 순간 바로(동기) 해야 새 창이 열려도 막히지 않는다. */
+$(document).on('click', '#kakao-btn', function (e) {
+	var text = setup.certText(), ok = false;
+	if (navigator.clipboard && window.isSecureContext) {
+		navigator.clipboard.writeText(text).catch(function () {});
+		ok = true;
+	}
+	if (setup.copyFallback(text)) { ok = true; }
+	if (ok) {
+		setup.toast('복사됐어요! 채팅창에 붙여넣고 전송한 뒤 이 화면으로 돌아오세요.');
+	} else {
+		e.preventDefault();
 		var box = document.getElementById('copybox');
-		if (ok) {
-			setup.toast('복사됐어요! 채팅창에 붙여넣고 전송해 주세요.');
-			setTimeout(function () { window.location.href = setup.KAKAO_CHAT; }, 1300);
-		} else {
-			if (box) { box.hidden = false; scrollToEl(box, 'end'); }
-			setup.toast('자동 복사가 막혔어요. 아래 문구를 길게 눌러 복사해 주세요.');
-		}
-	});
+		if (box) { box.hidden = false; scrollToEl(box, 'end'); }
+		setup.toast('자동 복사가 막혔어요. 아래 문구를 길게 눌러 복사해 주세요.');
+	}
 });
 /* twine-user-script #5: "typer.js" */
 /* 대사창 타자 효과: 대사와 지문이 읽는 속도에 맞춰 한 글자씩 나타난다.
@@ -2858,7 +2863,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;li&gt;휴대폰 번호를 넣고 &lt;b&gt;도장 받기&lt;/b&gt;를 누르면 끝! 내 도장 카드가 바로 열려요.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;a class=&quot;go&quot; id=&quot;cert-btn&quot; href=&quot;#&quot; target=&quot;_top&quot;&gt;사전미션 인증하기&lt;/a&gt;
-&lt;button type=&quot;button&quot; class=&quot;go ghost&quot; id=&quot;kakao-btn&quot;&gt;카톡 채널로 보내기&lt;/button&gt;
+&lt;a class=&quot;go ghost&quot; id=&quot;kakao-btn&quot; href=&quot;https://pf.kakao.com/_KVzFX/chat&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;카톡 채널로 보내기&lt;/a&gt;
 &lt;p class=&quot;fine&quot;&gt;세 미션 모두 같은 휴대폰 번호로 인증해 주세요. 인증이 잘 안 되면 카톡 채널로 보내거나 이 화면을 캡처해서 보내 주세요.&lt;/p&gt;
 &lt;div class=&quot;share-box&quot;&gt;
 &lt;p class=&quot;mission-title&quot;&gt;친구에게 자랑하기&lt;/p&gt;
@@ -2869,7 +2874,7 @@ $(document).on('click', '#kakao-btn', function () {
 &lt;div class=&quot;copybox&quot; id=&quot;copybox&quot; hidden&gt;
 &lt;p&gt;아래 문구를 길게 눌러 복사한 뒤 채널에 보내 주세요.&lt;/p&gt;
 &lt;pre id=&quot;copytext&quot;&gt;&lt;/pre&gt;
-&lt;a class=&quot;go ghost&quot; href=&quot;https://pf.kakao.com/_KVzFX/chat&quot; target=&quot;_top&quot;&gt;채널 채팅방 열기&lt;/a&gt;
+&lt;a class=&quot;go ghost&quot; href=&quot;https://pf.kakao.com/_KVzFX/chat&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;채널 채팅방 열기&lt;/a&gt;
 &lt;/div&gt;
 &lt;/div&gt;</tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
