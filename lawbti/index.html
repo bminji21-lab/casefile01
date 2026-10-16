@@ -98,6 +98,15 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 .cert ol { margin: 16px 0 0; padding-left: 20px; font-size: 14.5px; line-height: 1.65; color: #3a3a3e; }
 .fine { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
 .share { margin-top: 12px; padding: 22px; }
+.others { margin-top: 12px; padding: 22px; }
+.type-pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.type-pills button { min-height: 52px; padding: 10px 12px; font: inherit; font-size: 15.5px; font-weight: 700; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
+.type-pills button.mine { background: var(--black); color: #fff; border-color: var(--black); }
+.type-pills button small { display: block; font-size: 11.5px; font-weight: 500; opacity: .75; }
+.sheet-bg { position: fixed; inset: 0; z-index: 55; background: rgba(28,27,24,.45); display: flex; align-items: flex-end; justify-content: center; }
+.sheet-box { width: 100%; max-width: 480px; max-height: 88vh; max-height: 88dvh; overflow-y: auto; background: var(--bg); border-radius: 22px 22px 0 0; padding: 26px 22px max(22px, env(safe-area-inset-bottom)); animation: slideup .28s ease both; }
+.sheet-box .r-body p { font-size: 15px; }
+.sheet-box .r-law, .sheet-box .kw span { background: #fff; }
 .toast { position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); transform: translateX(-50%); max-width: calc(100% - 32px); padding: 11px 16px; background: var(--black); color: #fff; font-size: 14px; font-weight: 700; border-radius: 12px; z-index: 50; text-align: center; }
 
 .ov { position: fixed; inset: 0; z-index: 60; background: var(--bg); overflow-y: auto; display: flex; justify-content: center; padding: 24px 20px 32px; }
@@ -197,8 +206,29 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 			<p class="fine">테스트 링크가 같이 복사돼요. 스토리에서 링크 스티커를 누르고 붙여넣기 하면 친구도 바로 해 볼 수 있어요.</p>
 			<button class="btn soft" id="retry" type="button">테스트 다시 하기</button>
 		</div>
+		<div class="card others">
+			<p class="cert-t" style="margin-bottom: 4px;">다른 결과도 궁금하다면?</p>
+			<p class="fine" style="margin-top: 0;">유형을 누르면 설명을 볼 수 있어요.</p>
+			<div class="type-pills" id="type-pills"></div>
+		</div>
 		<p class="foot">Law-Impact 사전미션 · 인증 마감 11/13(금) 23:59</p>
 	</section>
+</div>
+
+<div class="sheet-bg" id="type-sheet" hidden>
+	<div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="ts-type">
+		<p class="label" id="ts-kicker">LAWBTI 유형</p>
+		<h2 class="r-type" id="ts-type" style="font-size: 38px;"></h2>
+		<p class="r-quote" id="ts-quote"></p>
+		<div class="r-body" style="margin-top: 14px; padding: 0;">
+			<div id="ts-desc"></div>
+			<p class="sec-t">⚖️ 법조 키워드</p>
+			<div class="kw" id="ts-kw"></div>
+			<p class="sec-t">🧑‍⚖️ 이런 법조인이 될 수 있어요</p>
+			<p class="r-law" id="ts-law"></p>
+		</div>
+		<button class="btn" type="button" id="ts-close">닫기</button>
+	</div>
 </div>
 
 <script>
@@ -374,6 +404,14 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 		$('r-kw').innerHTML = '';
 		t.kw.forEach(function (k) { var s = document.createElement('span'); s.textContent = k; $('r-kw').appendChild(s); });
 		$('r-law').textContent = t.law;
+		var pills = $('type-pills'); pills.innerHTML = '';
+		ORDER.forEach(function (k) {
+			var b = document.createElement('button'); b.type = 'button';
+			b.textContent = TYPES[k].name;
+			if (k === st.type) { b.className = 'mine'; var sm = document.createElement('small'); sm.textContent = '내 유형'; b.appendChild(sm); }
+			b.addEventListener('click', function () { openType(k); });
+			pills.appendChild(b);
+		});
 		$('c-name').textContent = st.name; $('c-school').textContent = st.school; $('c-code').textContent = st.code;
 		$('cert-btn').href = '../cert/?m=1&n=' + encodeURIComponent(st.name) + '&s=' + encodeURIComponent(st.school) +
 			'&c=' + encodeURIComponent(st.code) + '&t=' + encodeURIComponent(t.name);
@@ -381,6 +419,26 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 		storyReady = null; drawStory();
 	}
 	$('retry').addEventListener('click', function () { cover(); });
+
+	/* ---------- 다른 결과 보기 ---------- */
+	function openType(k) {
+		var t = TYPES[k];
+		$('ts-kicker').textContent = k === st.type ? 'LAWBTI 유형 · 내 유형' : 'LAWBTI 유형';
+		$('ts-type').textContent = t.name;
+		$('ts-quote').textContent = '“' + t.quote + '”';
+		$('ts-desc').innerHTML = '';
+		t.desc.forEach(function (p, i) { var el = document.createElement('p'); el.textContent = p; if (i === 0) { el.style.fontWeight = '700'; } $('ts-desc').appendChild(el); });
+		$('ts-kw').innerHTML = '';
+		t.kw.forEach(function (w) { var sp = document.createElement('span'); sp.textContent = w; $('ts-kw').appendChild(sp); });
+		$('ts-law').textContent = t.law;
+		$('type-sheet').hidden = false;
+		$('type-sheet').querySelector('.sheet-box').scrollTop = 0;
+		$('ts-close').focus();
+	}
+	function closeType() { $('type-sheet').hidden = true; }
+	$('ts-close').addEventListener('click', closeType);
+	$('type-sheet').addEventListener('click', function (e) { if (e.target === this) { closeType(); } });
+	document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('type-sheet').hidden) { closeType(); } });
 
 	/* ---------- 카톡 채널로 보내기 (새 창, 복사는 누르는 순간) ---------- */
 	function certText() {
