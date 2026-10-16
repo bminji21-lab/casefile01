@@ -205,7 +205,7 @@ label.field { display: block; font-weight: 900; font-size: 16px; margin: 0 0 8px
 		document.body.removeChild(ta); return ok;
 	}
 	/* 결과 화면으로 돌아가는 길 (게임 결과는 같은 사이트에 저장돼 있다) */
-	var BACK = { 2: '../?result' };
+	var BACK = { 1: '../lawbti/?result', 2: '../?result' };
 	if (BACK[m]) { $('back-game').href = BACK[m]; $('back-game').hidden = false; }
 
 	/* 카톡 채널은 새 창으로: 복사는 클릭하는 순간 바로 한다 */
