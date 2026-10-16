@@ -99,6 +99,8 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 .fine { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
 .share { margin-top: 12px; padding: 22px; }
 .others { margin-top: 12px; padding: 22px; }
+.again-box { margin-top: 12px; padding: 22px; }
+.again-box .btn { margin-top: 14px; }
 .type-pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
 .type-pills button { min-height: 52px; padding: 10px 12px; font: inherit; font-size: 15.5px; font-weight: 700; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
 .type-pills button.mine { background: var(--black); color: #fff; border-color: var(--black); }
@@ -210,7 +212,11 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 			<p class="fine" style="margin-top: 0;">유형을 누르면 설명을 볼 수 있어요.</p>
 			<div class="type-pills" id="type-pills"></div>
 		</div>
-		<button class="btn soft" id="retry" type="button">테스트 다시 하기</button>
+		<div class="card again-box">
+			<p class="cert-t" style="margin-bottom: 4px;">한 번 더 해 볼까요?</p>
+			<p class="fine" style="margin-top: 0;">처음 화면으로 돌아가 새로 테스트해요.</p>
+			<button class="btn line" id="retry" type="button">테스트 다시 하기</button>
+		</div>
 		<p class="foot">Law-Impact 사전미션 · 인증 마감 11/13(금) 23:59</p>
 	</section>
 </div>
