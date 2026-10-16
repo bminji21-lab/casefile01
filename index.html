@@ -1859,7 +1859,43 @@ setup.finalize = function () {
 	var d = new Date();
 	var p = function (n) { return String(n).padStart(2, '0'); };
 	v.when = d.getFullYear() + '.' + p(d.getMonth() + 1) + '.' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+	setup.saveResult();
 };
+
+/* ---------- 결과 저장: 창을 닫았다 다시 와도 결과 화면(인증·인스타 공유)을 다시 열 수 있게 ---------- */
+setup.RESULT_KEY = 'cf01-result';
+setup.saveResult = function () {
+	var v = State.variables;
+	try {
+		localStorage.setItem(setup.RESULT_KEY, JSON.stringify({ name: v.name, school: v.school, code: v.code, type: v.type, when: v.when, elapsed: v.elapsed, opened: v.opened, F: v.F, H: v.H, R: v.R }));
+	} catch (e) {}
+};
+setup.loadResult = function () {
+	try { var r = JSON.parse(localStorage.getItem(setup.RESULT_KEY) || 'null'); return r && r.code ? r : null; } catch (e) { return null; }
+};
+setup.openResult = function () {
+	var r = setup.loadResult();
+	if (!r) { return false; }
+	var v = State.variables;
+	Object.keys(r).forEach(function (k) { v[k] = r[k]; });
+	Engine.play('Cert');
+	return true;
+};
+/* 첫 화면에 '내 결과 다시 보기' 버튼, 주소에 ?result 가 있으면 바로 결과 화면 */
+$(document).on(':passagedisplay', function (ev) {
+	if (!ev.passage || ev.passage.title !== 'Title') { return; }
+	if (/[?&]result\b/.test(location.search) && !setup._autoResult) {
+		setup._autoResult = true;
+		if (setup.openResult()) { return; }
+	}
+	var r = setup.loadResult(), folder = document.querySelector('.passage .folder');
+	if (!r || !folder || folder.querySelector('#again-btn')) { return; }
+	var b = document.createElement('button');
+	b.type = 'button'; b.className = 'go ghost'; b.id = 'again-btn';
+	b.textContent = '내 결과 다시 보기 (인증 · 인스타 공유)';
+	b.addEventListener('click', function () { setup.openResult(); });
+	folder.appendChild(b);
+});
 setup.certText = function () {
 	var v = State.variables;
 	return '[Law-Impact 사전미션] CASE FILE 01 완료\n이름: ' + v.name + ' / 학교: ' + v.school +
