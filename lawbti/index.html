@@ -198,8 +198,7 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 				<li>휴대폰 번호를 넣고 <b>도장 받기</b>를 누르면 끝! 내 도장 카드가 바로 열려요.</li>
 			</ol>
 			<a class="btn" id="cert-btn" href="../cert/">사전미션 인증하기</a>
-			<a class="btn line" id="kakao-btn" href="https://pf.kakao.com/_KVzFX/chat" target="_blank" rel="noopener">카톡 채널로 보내기</a>
-			<p class="fine">세 미션 모두 같은 휴대폰 번호로 인증해 주세요. 인증이 잘 안 되면 카톡 채널로 보내거나 이 화면을 캡처해서 보내 주세요.</p>
+			<p class="fine">세 미션 모두 같은 휴대폰 번호로 인증해 주세요. 인증이 잘 안 되면 인증 화면에서 카톡 채널로 보낼 수 있어요.</p>
 		</div>
 
 		<div class="card share">
@@ -464,7 +463,7 @@ body { color: var(--ink); font-family: var(--sans); -webkit-text-size-adjust: 10
 		if (copySync(text)) { ok = true; }
 		return ok;
 	}
-	$('kakao-btn').addEventListener('click', function (e) {
+	if ($('kakao-btn')) $('kakao-btn').addEventListener('click', function (e) {
 		if (copyNow(certText())) { toast('복사됐어요! 채팅창에 붙여넣고 전송한 뒤 이 화면으로 돌아오세요.'); }
 		else { e.preventDefault(); toast('자동 복사가 막혔어요. 이 화면을 캡처해서 채널로 보내 주세요.'); }
 	});
